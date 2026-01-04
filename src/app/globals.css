@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+/* =========================
+   CSS VARIABLES (LIGHT)
+========================= */
+:root {
+  --background: #ffffff;
+  --foreground: #0f172a;
+
+  --color-muted: #475569;
+  --color-primary: #1e293b;
+  --color-border: #e2e8f0;
+}
+
+/* =========================
+   DARK MODE VARIABLES
+========================= */
+html.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+
+  --color-muted: #9ca3af;
+  --color-primary: #e5e7eb;
+  --color-border: #1f2937;
+}
+
+/* =========================
+   TAILWIND THEME BINDINGS
+========================= */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* =========================
+   BASE STYLES
+========================= */
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+html {
+  scroll-behavior: smooth;
+}
