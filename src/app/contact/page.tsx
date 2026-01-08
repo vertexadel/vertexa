@@ -1,67 +1,105 @@
+"use client";
+
+import { useState } from "react";
+
 export default function ContactPage() {
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    setSuccess(false);
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    const payload = {
+      name: formData.get("name"),
+      email: formData.get("email"),
+      phone: formData.get("phone") || "",
+      sector: formData.get("sector"),
+      message: formData.get("message"),
+      company: formData.get("company"), // honeypot
+    };
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.ok) {
+        throw new Error("API hata döndü");
+      }
+
+      setSuccess(true);
+      form.reset(); // ✅ FORM TEMİZLENİR
+    } catch (err) {
+      console.error(err);
+      setError("Bir hata oluştu. Lütfen tekrar deneyin.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
-    <section className="min-h-screen bg-white pt-32 pb-24">
+    <section className="min-h-screen bg-neutral-50 pt-32 pb-24">
       <div className="mx-auto max-w-3xl px-6">
 
         {/* Header */}
-        <div className="mb-14">
+        <div className="mb-16 text-center">
           <h1 className="text-3xl md:text-4xl font-semibold text-slate-900">
             Projenizi konuşalım
           </h1>
           <p className="mt-4 text-slate-600">
-            Aşağıdaki formu doldurarak projeniz hakkında temel bilgileri paylaşabilirsiniz.
-            En kısa sürede size geri dönüş sağlayacağım.
+            Projenizle ilgili temel bilgileri paylaşın, size en kısa sürede dönüş yapayım.
           </p>
         </div>
 
-        {/* Form */}
-        <form className="space-y-6">
+        {/* Form Card */}
+        <div className="rounded-2xl bg-white p-8 shadow-sm border border-slate-200">
+          <form onSubmit={handleSubmit} className="space-y-6">
 
-          {/* Ad Soyad */}
-          <div>
-            <label className="block text-sm font-medium text-slate-700">
-              Ad Soyad
-            </label>
+            {/* HONEYPOT (BOTLAR İÇİN) */}
             <input
               type="text"
-              placeholder="Adınız ve soyadınız"
-              className="mt-2 w-full rounded-lg border border-slate-300 px-4 py-3 text-slate-900 focus:border-slate-900 focus:outline-none"
+              name="company"
+              tabIndex={-1}
+              autoComplete="off"
+              className="hidden"
             />
-          </div>
 
-          {/* Email */}
-          <div>
-            <label className="block text-sm font-medium text-slate-700">
-              E-posta Adresi
-            </label>
             <input
+              name="name"
+              required
+              placeholder="Ad Soyad"
+              className="w-full rounded-lg border px-4 py-3"
+            />
+
+            <input
+              name="email"
               type="email"
-              placeholder="ornek@mail.com"
-              className="mt-2 w-full rounded-lg border border-slate-300 px-4 py-3 text-slate-900 focus:border-slate-900 focus:outline-none"
+              required
+              placeholder="E-posta"
+              className="w-full rounded-lg border px-4 py-3"
             />
-          </div>
 
-          {/* Proje Adı */}
-          <div>
-            <label className="block text-sm font-medium text-slate-700">
-              Proje Adı
-            </label>
             <input
-              type="text"
-              placeholder="Projenizin adı"
-              className="mt-2 w-full rounded-lg border border-slate-300 px-4 py-3 text-slate-900 focus:border-slate-900 focus:outline-none"
+              name="phone"
+              placeholder="Telefon (opsiyonel)"
+              className="w-full rounded-lg border px-4 py-3"
             />
-          </div>
 
-          {/* Sektör */}
-          <div>
-            <label className="block text-sm font-medium text-slate-700">
-              Sektör
-            </label>
             <select
-              className="mt-2 w-full rounded-lg border border-slate-300 px-4 py-3 text-slate-900 focus:border-slate-900 focus:outline-none"
+              name="sector"
+              className="w-full rounded-lg border px-4 py-3"
             >
-              <option>Seçiniz</option>
               <option>Kurumsal</option>
               <option>E-ticaret</option>
               <option>SaaS</option>
@@ -69,29 +107,35 @@ export default function ContactPage() {
               <option>Eğitim</option>
               <option>Diğer</option>
             </select>
-          </div>
 
-          {/* Proje Açıklaması */}
-          <div>
-            <label className="block text-sm font-medium text-slate-700">
-              Proje Açıklaması
-            </label>
             <textarea
+              name="message"
+              required
               rows={5}
-              placeholder="Projeniz hakkında kısa bir açıklama yazın"
-              className="mt-2 w-full rounded-lg border border-slate-300 px-4 py-3 text-slate-900 focus:border-slate-900 focus:outline-none"
+              placeholder="Projenizden kısaca bahsedin"
+              className="w-full rounded-lg border px-4 py-3"
             />
-          </div>
 
-          {/* Submit */}
-          <button
-            type="submit"
-            className="mt-6 rounded-lg bg-slate-900 px-6 py-3 text-white hover:bg-slate-800 transition"
-          >
-            Talep Gönder
-          </button>
-        </form>
+            <button
+              disabled={loading}
+              className="w-full rounded-lg bg-slate-900 py-3 text-white"
+            >
+              {loading ? "Gönderiliyor..." : "Talep Gönder"}
+            </button>
 
+            {success && (
+              <p className="text-green-600 text-center">
+                Mesajınız başarıyla gönderildi.
+              </p>
+            )}
+
+            {error && (
+              <p className="text-red-600 text-center">
+                {error}
+              </p>
+            )}
+          </form>
+        </div>
       </div>
     </section>
   );

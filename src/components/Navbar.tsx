@@ -22,7 +22,9 @@ export default function Navbar() {
           : "bg-white h-16"
       }`}
     >
-      <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-6">
+      <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-6
+                md:justify-between justify-center">
+
         
         {/* LOGO */}
         <Link href="/" className="flex items-center">
