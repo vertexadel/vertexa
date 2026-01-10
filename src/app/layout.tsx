@@ -18,15 +18,20 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Vertexa | Modern Web Deneyimleri",
-  description:
-    "Modern web siteleri, mobil uygulamalar ve dijital ürünler.",
-};
+  description: "Modern web siteleri ve dijital çözümler",
+  icons: {
+    icon: "/favicon.png", // veya favicon.ico
+  },
+}
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
-}) {
+})
+
+
+{
   return (
     <html lang="tr" suppressHydrationWarning>
       <body
@@ -55,3 +60,4 @@ export default function RootLayout({
     </html>
   );
 }
+
